@@ -2,48 +2,45 @@
 
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document, Types } from 'mongoose';
-import { RecordStatus } from './../../constants/status.constants';
+import { RecordStatus, StatusItem } from './../../constants/status.constants';
 
 @Schema({ timestamps: true })
 export class ElectronicItem extends Document {
   @Prop({ required: true, unique: true })
-  code: string; // Mã linh kiện duy nhất
+  code: string; // Mã thiết bị duy nhất (VD: CPU-I5-001)
 
   @Prop({ required: true })
-  name: string; // Tên linh kiện
+  name: string; // Tên thiết bị
 
   @Prop({ type: Types.ObjectId, ref: 'ElectronicCategory', required: true })
-  category: Types.ObjectId; // Loại linh kiện
+  category: Types.ObjectId; // Loại thiết bị
 
   @Prop()
-  brand: string; // Hãng sản xuất (VD: Intel, Samsung)
+  brand: string; // Hãng sản xuất
 
   @Prop()
   specification: string; // Thông số kỹ thuật
 
-  @Prop({ default: 0 })
-  currentStock: number; // Số lượng tồn kho
-
   @Prop({ enum: RecordStatus, default: RecordStatus.ACTIVE })
-  status: RecordStatus; // Trạng thái bản ghi (0: Inactive, 1: Active)
+  status: RecordStatus; // Trạng thái bản ghi (ACTIVE/INACTIVE)
+
+  @Prop({ enum: StatusItem, default: StatusItem.IN_STOCK })
+  statusItem: StatusItem; // Trạng thái sử dụng của thiết bị
 
   @Prop()
-  price: number; // Giá nhập 1 đơn vị
+  price: number; // Giá thiết bị
 
   @Prop()
-  importDate: Date; // Ngày nhập
+  importDate: Date; // Ngày nhập thiết bị
 
   @Prop()
   warrantyExpireDate: Date; // Hạn bảo hành
 
   @Prop()
-  location: string; // Vị trí lưu kho
+  location: string; // Vị trí trong kho
 
   @Prop()
-  note: string; // Ghi chú
-
-  //   @Prop()
-  //   quantity: number; // Số lượng nhập kho
+  note: string; // Ghi chú khác
 }
 
 export const ElectronicItemSchema =

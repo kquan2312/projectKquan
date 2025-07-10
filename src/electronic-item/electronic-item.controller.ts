@@ -1,4 +1,12 @@
-import { Body, Controller, Get, Post, Query, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Post,
+  Query,
+  UseGuards,
+  Param,
+} from '@nestjs/common';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { CreateElectronicItemDto } from './dto/create-electronic-item.dto';
 import { ElectronicItemService } from './electronic-item.service';
@@ -16,5 +24,9 @@ export class ElectronicItemController {
   @Get()
   findAll(@Query() queryParams: Record<string, any>) {
     return this.electronicItemService.findAll(queryParams);
+  }
+  @Get(':id')
+  findOne(@Param('id') id: string) {
+    return this.electronicItemService.findOne(id);
   }
 }

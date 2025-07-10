@@ -81,10 +81,12 @@ export class ElectronicItemService {
     const [data, total] = await Promise.all([
       this.electronicItemModel
         .find(filter)
+        .select('name code  currentStock')
         .populate('category', 'name') // Populate để lấy tên của danh mục
         .sort(sort)
         .skip(skip)
         .limit(limit)
+        .lean()
         .exec(),
       this.electronicItemModel.countDocuments(filter),
     ]);
@@ -100,5 +102,19 @@ export class ElectronicItemService {
         query: queryParams,
       },
     };
+  }
+
+  async findOne(id: string): Promise<ElectronicItem> {
+    const item = await this.electronicItemModel
+      .findById(id)
+      .populate('category', 'name')
+      .lean()
+      .exec();
+
+    if (!item) {
+      throw new BadRequestException(`Linh kiện với ID "${id}" không tồn tại.`);
+    }
+
+    return item;
   }
 }

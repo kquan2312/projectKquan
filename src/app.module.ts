@@ -8,6 +8,7 @@ import { UsersModule } from './users/users.module';
 import { ElectronicCategoryModule } from './electronic-category/electronic-category.module';
 import { ElectronicCategorySchema } from './electronic-category/entities/electronic-category.schema';
 import { ElectronicItemModule } from './electronic-item/electronic-item.module';
+import { TicketModule } from './ticket/ticket.module';
 
 @Module({
   imports: [
@@ -25,6 +26,7 @@ import { ElectronicItemModule } from './electronic-item/electronic-item.module';
     UsersModule,
     ElectronicCategoryModule,
     ElectronicItemModule,
+    TicketModule,
   ],
   controllers: [AppController],
   providers: [AppService],
