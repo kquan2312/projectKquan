@@ -22,10 +22,10 @@ export class ElectronicItem extends Document {
   specification: string; // Thông số kỹ thuật
 
   @Prop({ enum: RecordStatus, default: RecordStatus.ACTIVE })
-  status: RecordStatus; // Trạng thái bản ghi (ACTIVE/INACTIVE)
+  status: number; // Trạng thái bản ghi (ACTIVE/INACTIVE)
 
   @Prop({ enum: StatusItem, default: StatusItem.IN_STOCK })
-  statusItem: StatusItem; // Trạng thái sử dụng của thiết bị
+  statusItem: number; // Trạng thái sử dụng của thiết bị
 
   @Prop()
   price: number; // Giá thiết bị
@@ -41,6 +41,12 @@ export class ElectronicItem extends Document {
 
   @Prop()
   note: string; // Ghi chú khác
+
+  @Prop({ type: String, required: false })
+  image?: string; // URL của ảnh trên Cloudinary
+
+  @Prop({ type: String, required: false })
+  imagePublicId?: string; // Public ID của ảnh trên Cloudinary
 }
 
 export const ElectronicItemSchema =

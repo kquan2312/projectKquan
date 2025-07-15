@@ -59,7 +59,25 @@ export class AuthService {
     const payload = { username: user.username, sub: user._id };
     return {
       message: 'Đăng nhập thành công!',
+      user,
       access_token: this.jwtService.sign(payload),
+    };
+  }
+
+  async logout(user: any): Promise<any> {
+    // Invalidate the current JWT token (client-side)
+    // Optionally, you can maintain a list of invalid tokens on the server-side
+    // for more robust token management.
+    return { message: 'Đăng xuất thành công!' };
+  }
+
+  async refreshToken(user: any) {
+    const payload = { username: user.username, sub: user._id };
+    const accessToken = this.jwtService.sign(payload);
+
+    return {
+      message: 'Refresh token thành công!',
+      access_token: accessToken,
     };
   }
 }

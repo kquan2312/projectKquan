@@ -1,4 +1,11 @@
-import { Body, Controller, Post, UnauthorizedException } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Post,
+  Req,
+  UnauthorizedException,
+  UseGuards,
+} from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { LoginDto } from './dto/login.dto';
 import { RegisterUserDto } from './dto/register-user.dto';
@@ -22,5 +29,18 @@ export class AuthController {
       throw new UnauthorizedException('Thông tin đăng nhập không chính xác');
     }
     return this.authService.login(user);
+  }
+
+  @Post('logout')
+  // @UseGuards(AuthGuard('jwt')) // Require authentication
+  async logout(@Req() req: any) {
+    // The JWT strategy will populate req.user with the authenticated user
+    return this.authService.logout(req.user);
+  }
+
+  @Post('refresh-token')
+  // @UseGuards(AuthGuard('jwt')) // Require authentication
+  async refreshToken(@Req() req: any) {
+    return this.authService.refreshToken(req.user);
   }
 }

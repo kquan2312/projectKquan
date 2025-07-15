@@ -15,7 +15,7 @@ import { UpdateElectronicCategoryDto } from './dto/update-electronic-category.dt
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 
 @Controller('electronic-category')
-@UseGuards(JwtAuthGuard)
+// @UseGuards(JwtAuthGuard)
 export class ElectronicCategoryController {
   constructor(
     private readonly electronicCategoryService: ElectronicCategoryService,

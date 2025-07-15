@@ -71,7 +71,12 @@ export class ElectronicItemService {
 
     // Xây dựng điều kiện sắp xếp
     const sort: { [key: string]: 1 | -1 } = {};
-    if (sortBy && ['asc', 'desc'].includes(String(sortOrder))) {
+    const allowedSortFields = ['name', 'code', 'brand', 'createdAt']; // Các trường cho phép sắp xếp
+    if (
+      sortBy &&
+      allowedSortFields.includes(sortBy) &&
+      ['asc', 'desc'].includes(String(sortOrder))
+    ) {
       sort[sortBy] = sortOrder === 'asc' ? 1 : -1;
     } else {
       // Mặc định sắp xếp theo thời gian tạo mới nhất
@@ -81,7 +86,7 @@ export class ElectronicItemService {
     const [data, total] = await Promise.all([
       this.electronicItemModel
         .find(filter)
-        .select('name code  currentStock')
+        .select('name code statusItem brand')
         .populate('category', 'name') // Populate để lấy tên của danh mục
         .sort(sort)
         .skip(skip)
@@ -116,5 +121,63 @@ export class ElectronicItemService {
     }
 
     return item;
+  }
+
+  async findAllBrand(): Promise<string[]> {
+    const brands = await this.electronicItemModel.distinct('brand').exec();
+
+    return brands;
+  }
+
+  // async update(id: string, updateElectronicItemDto: UpdateElectronicItemDto) {
+  //   return this.electronicItemModel
+  //     .findByIdAndUpdate(id, updateElectronicItemDto, { new: true })
+  //     .exec();
+  // }
+
+  async update(
+    id: string,
+    updateElectronicItemDto: CreateElectronicItemDto,
+  ): Promise<ElectronicItem> {
+    const { code, category: categoryId } = updateElectronicItemDto;
+
+    const [existingItem, category] = await Promise.all([
+      this.electronicItemModel.findOne({ code }).exec(),
+      this.electronicCategoryModel.findById(categoryId).exec(),
+    ]);
+
+    // if (
+    //   existingItem &&
+    //   (existingItem._id as Types.ObjectId).toString() !== id
+    // ) {
+    //   throw new ConflictException(`Linh kiện với mã "${code}" đã tồn tại.`);
+    // }
+
+    // if (!category) {
+    //   throw new BadRequestException(
+    //     `Danh mục với ID "${categoryId}" không tồn tại.`,
+    //   );
+    // }
+
+    const updatedItem = await this.electronicItemModel
+      .findByIdAndUpdate(id, updateElectronicItemDto, { new: true })
+      .exec();
+
+    if (!updatedItem) {
+      throw new BadRequestException(`Linh kiện với ID "${id}" không tồn tại.`);
+    }
+
+    return updatedItem;
+  }
+  async remove(id: string): Promise<ElectronicItem> {
+    const deletedItem = await this.electronicItemModel
+      .findByIdAndUpdate(id, { status: RecordStatus.INACTIVE }, { new: true })
+      .exec();
+
+    if (!deletedItem) {
+      throw new BadRequestException(`Linh kiện với ID "${id}" không tồn tại.`);
+    }
+
+    return deletedItem;
   }
 }

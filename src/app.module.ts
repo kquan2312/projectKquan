@@ -9,6 +9,7 @@ import { ElectronicCategoryModule } from './electronic-category/electronic-categ
 import { ElectronicCategorySchema } from './electronic-category/entities/electronic-category.schema';
 import { ElectronicItemModule } from './electronic-item/electronic-item.module';
 import { TicketModule } from './ticket/ticket.module';
+import { FilemanagerModule } from './filemanager/filemanager.module';
 
 @Module({
   imports: [
@@ -27,6 +28,7 @@ import { TicketModule } from './ticket/ticket.module';
     ElectronicCategoryModule,
     ElectronicItemModule,
     TicketModule,
+    FilemanagerModule,
   ],
   controllers: [AppController],
   providers: [AppService],
