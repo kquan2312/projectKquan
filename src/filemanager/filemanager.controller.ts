@@ -1,4 +1,12 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+} from '@nestjs/common';
 import { FilemanagerService } from './filemanager.service';
 import { CreateFilemanagerDto } from './dto/create-filemanager.dto';
 import { UpdateFilemanagerDto } from './dto/update-filemanager.dto';
@@ -23,7 +31,10 @@ export class FilemanagerController {
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateFilemanagerDto: UpdateFilemanagerDto) {
+  update(
+    @Param('id') id: string,
+    @Body() updateFilemanagerDto: UpdateFilemanagerDto,
+  ) {
     return this.filemanagerService.update(+id, updateFilemanagerDto);
   }
 

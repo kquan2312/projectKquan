@@ -1,43 +1,48 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document, Types } from 'mongoose';
-import { RecordStatus, StatusItem } from './../../constants/status.constants';
+import {
+  RecordStatus,
+  StatusItem,
+  TicketStatus,
+  TypeTicket,
+} from './../../constants/status.constants';
 
 @Schema({ timestamps: true })
 export class Ticket extends Document {
   @Prop({ required: true, unique: true })
-  code: string; // Mã vé duy nhất (VD: TICKET-001)
+  code: string; // Mã phiếu duy nhất (VD: TICKET-001)
 
   @Prop({ required: true })
-  name: string; // Tên sự kiện
+  name: string; // Tên Phiếu
 
   @Prop({ type: [Types.ObjectId], ref: 'ElectronicItem', required: true })
   listItems: Types.ObjectId[]; // ds thiết bị thuộc phiếu
 
   @Prop({ type: Types.ObjectId, ref: 'User', required: true })
-  user: Types.ObjectId; // Người giao
+  user: Types.ObjectId; // Người giao, lấy người đang login
 
   @Prop({ type: [Types.ObjectId], ref: 'User', required: true })
-  receiver: Types.ObjectId[]; // người nhận
+  receiver: Types.ObjectId[]; // người nhận việc
 
   @Prop({ type: Date, required: true })
-  eventDate: Date; // Ngày diễn ra sự kiện
+  eventDate: Date; // Ngày tạo phiếu
 
   @Prop({ type: Date, required: true })
-  processStatus: Date; // Ngày diễn ra sự kiện
+  processStatus: Date; //hạn xử lý
 
   @Prop({ enum: RecordStatus, default: RecordStatus.ACTIVE })
-  status: number; // Trạng thái vé (ACTIVE/INACTIVE)
+  status: number; // Trạng bản ghi
 
-  @Prop({ enum: StatusItem })
-  statusItem: number; // Trạng thái sử dụng của vé
+  @Prop({ enum: TicketStatus, default: TicketStatus.NEW })
+  statusTicket: number; // Trạng thái phiếu
 
-  @Prop({ required: true })
-  typeTicket: string; // Loại vé (nếu có)
+  @Prop({ required: true, enum: TypeTicket })
+  typeTicket: TypeTicket; // Loại vé (nếu có)
 
   @Prop()
   note: string; // Ghi chú khác
 
-  @Prop({ type: Number, required: false })
-  ticketStatus: number; // trạng thái của phiếu dùng để xác định nó ở đâu
+  @Prop({ type: [Types.ObjectId], ref: 'UploadFile', default: [] })
+  files: Types.ObjectId[];
 }
 export const TicketSchema = SchemaFactory.createForClass(Ticket);

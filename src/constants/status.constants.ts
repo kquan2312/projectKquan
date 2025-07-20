@@ -13,10 +13,15 @@ export enum StatusItem {
   RESERVED = 7, // Đã đặt hàng
 }
 export enum TicketStatus {
-  PENDING = 0, // Chờ xử lý
+  NEW = 0, // Khởi tạo
   CONFIRMED = 1, // Đã xác nhận
   CANCELLED = 2, // Đã hủy
   EXPIRED = 4, // Đã hết hạn
   COMPLETE = 5, // Đã hoàn thành
   UNCONFIRMED = 6, // Chờ xác nhận
+}
+export enum TypeTicket {
+  WARRANTY = 'Phiếu bảo hành',
+  REPAIR = 'Phiếu sửa chữa',
+  CONTRACT = 'Phiếu hợp đồng',
 }
