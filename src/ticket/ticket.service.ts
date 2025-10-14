@@ -51,6 +51,7 @@ export class TicketService {
         item.statusItem === StatusItem.OUT_OF_STOCK ||
         item.statusItem === StatusItem.UNDER_MAINTENANCE,
     );
+    // chắc k lỗi đâu
 
     if (unavailableItems.length > 0) {
       const itemDetails = unavailableItems
