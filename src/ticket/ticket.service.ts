@@ -28,20 +28,37 @@ export class TicketService {
   ): Promise<Ticket> {
     const { listItems, receiver } = createTicketDto;
 
-    // 1. Kiểm tra sự tồn tại của người nhận
-    const receiversExist = await this.userModel.countDocuments({
-      _id: { $in: receiver },
-    });
+    // 1. Kiểm tra sự tồn tại của người nhận và thiết bị đồng thời
+    const [receiversExist, items] = await Promise.all([
+      this.userModel.countDocuments({ _id: { $in: receiver } }).exec(),
+      this.electronicItemModel
+        .find({ _id: { $in: listItems } })
+        .select('name code statusItem')
+        .exec(),
+    ]);
+
     if (receiversExist !== receiver.length) {
-      throw new BadRequestException('Một hoặc nhiều người nhận không hợp lệ.');
+      throw new BadRequestException('Một hoặc nhiều người nhận không tồn tại.');
     }
 
-    // 2. Kiểm tra sự tồn tại của thiết bị
-    const itemsExist = await this.electronicItemModel.countDocuments({
-      _id: { $in: listItems },
-    });
-    if (itemsExist !== listItems.length) {
+    if (items.length !== listItems.length) {
       throw new BadRequestException('Một hoặc nhiều thiết bị không hợp lệ.');
+    }
+
+    // 2. Kiểm tra trạng thái của từng thiết bị
+    const unavailableItems = items.filter(
+      (item) =>
+        item.statusItem === StatusItem.OUT_OF_STOCK ||
+        item.statusItem === StatusItem.UNDER_MAINTENANCE,
+    );
+
+    if (unavailableItems.length > 0) {
+      const itemDetails = unavailableItems
+        .map((item) => `${item.name} (${item.code})`)
+        .join(', ');
+      throw new BadRequestException(
+        `Các thiết bị sau không có sẵn hoặc đang được bảo trì: ${itemDetails}.`,
+      );
     }
 
     // 3. Tạo mã phiếu mới tự động tăng
@@ -139,8 +156,18 @@ export class TicketService {
     };
   }
 
-  findOne(id: string) {
-    return `This action returns a #${id} ticket`;
+  async findOne(id: string): Promise<Ticket> {
+    const ticket = await this.ticketModel
+      .findById(id)
+
+      .populate('listItems', 'name code') // ← chỉ populate các field name, code chẳng hạn
+      .populate('user', 'fullName username') // nếu bạn cũng muốn lấy tên user
+      .populate('receiver', 'fullName username') // nếu receiver là user khác
+      .exec();
+    if (!ticket) {
+      throw new ConflictException('Phiếu không tồn tại');
+    }
+    return ticket;
   }
 
   update(id: string, updateTicketDto: UpdateTicketDto) {
